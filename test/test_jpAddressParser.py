@@ -102,5 +102,20 @@ class TestAddressParser(unittest.TestCase):
         self.assertIsNone(addr['roomNumber'])
         self.assertIsNone(addr['floorNumber'])
 
+    def test_parse_address_pattern5(self):
+        # There is "郡" in the address, but it is not county
+        addr = {'work': '福島県郡山市熱海町熱海5-30-5'}
+        addr = parse_address(addr)
+        self.assertEqual(addr['prefecture'], '福島県')
+        self.assertIsNone(addr['county'])
+        self.assertEqual(addr['city'], '郡山市')
+        self.assertIsNone(addr['ward'])
+        self.assertEqual(addr['neighborhood'], '熱海町熱海五丁目')
+        self.assertEqual(addr['banch'], '30')
+        self.assertEqual(addr['go'], '5')
+        self.assertIsNone(addr['buildingName'])
+        self.assertIsNone(addr['roomNumber'])
+        self.assertIsNone(addr['floorNumber'])
+
 if __name__ == '__main__':
     unittest.main()

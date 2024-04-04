@@ -69,7 +69,7 @@ def parse_county_city_ward(parsed_address: dict) -> tuple:
     """Parse and return the county, city, and ward."""
     city = parsed_address['city']
     # Avoiding the parsing of cities with a "郡" at the beginning, such as "郡山市".
-    if '郡' in city and city.index('郡') == 0:
+    if '郡' in city and city.index('郡') != 0:
         county = city.split('郡')[0] + '郡'
         city = city.split('郡')[-1]
         return county, city, None
