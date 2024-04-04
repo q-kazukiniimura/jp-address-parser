@@ -1,6 +1,7 @@
 import csv
 import re
 import sys
+import time
 
 from normalize_japanese_addresses import normalize
 
@@ -113,10 +114,14 @@ def parse_address(addr: dict) -> dict:
     return addr
 
 if __name__ == "__main__":
+    start_time = time.time()
+    print(f"Start Time: {start_time}")
+
     # Check arguments
     file_path = check_arguments()
     # CSV data import
     rec = import_csv(file_path)
+    print(f"Records Processed: {len(rec)}")
     # Extract country
     rec = [extract_country(r) for r in rec]
     # Extract postalcode
@@ -125,3 +130,8 @@ if __name__ == "__main__":
     rec = [parse_address(r) for r in rec]
     # Export CSV
     export_csv(rec, file_path.rsplit(".", 1)[0] + "_parsed.csv")
+
+    end_time = time.time()
+    print(f"End Time: {end_time}")
+    processing_time = end_time - start_time
+    print(f"Processing Time: {processing_time} seconds")
