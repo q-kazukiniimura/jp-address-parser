@@ -161,3 +161,4 @@ cython_debug/
 
 # User Add
 data/*.csv
+!data/dummy_address.csv
