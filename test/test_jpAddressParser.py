@@ -51,9 +51,9 @@ class TestAddressParser(unittest.TestCase):
         self.assertEqual(addr['neighborhood'], '八重洲二丁目')
         self.assertEqual(addr['banch'], '1')
         self.assertEqual(addr['go'], '1')
-        self.assertEqual(addr['buildingName'], 'YANMAR TOKYO 12F')
+        self.assertEqual(addr['buildingName'], 'YANMAR TOKYO')
         self.assertIsNone(addr['roomNumber'])
-        self.assertIsNone(addr['floorNumber'])
+        self.assertEqual(addr['floorNumber'], '12F')
 
     def test_parse_address_pattern2(self):
         # Complex Address: Watanabe 3, Kyutaromachi 4 Chome, Chuo-ku, Osaka-shi, Osaka

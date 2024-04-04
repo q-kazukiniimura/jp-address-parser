@@ -36,7 +36,7 @@ def export_csv(data: list, file_path: str):
 
 def replace_strings_with_space(addr: dict) -> dict:
     """Replace specified strings with space in the address."""
-    strings_to_replace = [",", "ポストコード"]  # Add any other strings you want to replace with space
+    strings_to_replace = [",", "ポストコード", "〒無し", "〒なし", "郵便番号"]  # Add any other strings you want to replace with space
     for string in strings_to_replace:
         addr['work'] = addr['work'].replace(string, " ")
     return addr
@@ -102,9 +102,19 @@ def parse_banch_go(parsed_address: dict) -> tuple:
     go = " ".join(addr_split[1:]) if len(addr_split) > 1 else None
     return banch, go
 
-def parse_building_name(work: list) -> str:
-    """Parse and return the building name."""
-    return " ".join(work[1:]) if len(work) > 1 else None
+def parse_building_name(work: list) -> tuple:
+    """Parse and return the building name and floor."""
+    work = " ".join(work[1:]) if len(work) > 0 else ""
+
+    floor_number_pattern = r'(\d{1,2}階|\d{1,2}F)'  # Regular expression pattern for floor numbers
+    match = re.search(floor_number_pattern, work)
+    if match:
+        floor_number = match.group().strip()
+        building_name = re.sub(floor_number_pattern, '', work).strip()
+    else:
+        floor_number = None
+        building_name = work if len(work) != 0 else None
+    return building_name, floor_number
 
 def parse_address(addr: dict) -> dict:
     """Parse address details."""
@@ -122,9 +132,8 @@ def parse_address(addr: dict) -> dict:
     addr['neighborhood'] = parse_neighborhood(parsed_address, kanji_chome_in_town, numeric_chome_in_address)
 
     addr['banch'], addr['go'] = parse_banch_go(parsed_address)
-    addr['buildingName'] = parse_building_name(work)
+    addr['buildingName'], addr['floorNumber'] = parse_building_name(work)
     addr['roomNumber'] = None
-    addr['floorNumber'] = None
     del addr['work']
 
     return addr
