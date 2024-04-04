@@ -2,14 +2,14 @@
 This Python script is designed to parse Japanese address strings provided in a CSV file (`data/full_address.csv`). The parsed addresses are then exported to another CSV file (`data/parsed_address.csv`). The script consists of several functions to handle the import, parsing, and export processes.
 
 ## Usage:
-1. Ensure that the `data/full_address.csv` file containing the address data is present.
-2. Install requrired libraries below:
+1. Install requrired libraries below:
 ``` shell:
 pip install normalize_japanese_addresses
 ```
-3. Execute the script below:
+2. Ensure that the `data/full_address.csv` file containing the address data is present.
+3. Execute the script with file path like below:
 ```shell:
-python jpAddressParser.py
+python jpAddressParser.py data/full_address.csv
 ```
 
 ## Parsed Category and Difinition

@@ -1,8 +1,16 @@
 import csv
 import re
+import sys
 
 from normalize_japanese_addresses import normalize
 
+
+def check_arguments():
+    """Check if command-line arguments are properly specified."""
+    if len(sys.argv) < 2:
+        print("File path is not specified.")
+        sys.exit(1)
+    return sys.argv[1]
 
 def import_csv(file_path: str) -> list:
     """ Read a CSV file from the path and return a list of dictionaries """
@@ -80,9 +88,9 @@ def parse_address(addr: dict) -> dict:
     else:
         addr['neighborhood'] = parsed['town']
     # banch/go
-    addr = parsed['addr'].split("-")
-    addr['banch'] = addr[0]
-    addr['go'] = " ".join(work[1:]) if len(addr) > 0 else None
+    addr_split = parsed['addr'].split("-")
+    addr['banch'] = addr_split[0]
+    addr['go'] = " ".join(addr_split[1:]) if len(addr_split) > 0 else None
     # buildingName and others
     addr['buildingName'] = " ".join(work[1:]) if len(work) > 0 else None
     addr['roomNumber'] = None
@@ -93,8 +101,10 @@ def parse_address(addr: dict) -> dict:
 
 
 if __name__ == "__main__":
+    # Check arguments
+    file_path = check_arguments()
     # CSV data import
-    rec = import_csv("data/full_address.csv")
+    rec = import_csv(file_path)
     # Extract country
     rec = [extract_country(r) for r in rec]
     # Extract postalcode
@@ -102,4 +112,4 @@ if __name__ == "__main__":
     # parse address
     rec = [parse_address(r) for r in rec]
     # Export CSV
-    export_csv(rec, "data/parsed_address.csv")
+    export_csv(rec, file_path.rsplit(".", 1)[0] + "_parsed.csv")
