@@ -53,11 +53,11 @@ def parse_address(addr: dict) -> dict:
     city = parsed['city']
 
     if '郡' in city:
-        country = city.split('郡')[0] + '郡'
+        county = city.split('郡')[0] + '郡'
         city = city.split('郡')[-1]
     elif parsed['pref'] != '東京都' and '区' in city:
-        city = city.split('市')[0] + '市'
         ward = city.split('市')[1]
+        city = city.split('市')[0] + '市'
 
     addr.update({'county': county, 'city': city, 'ward': ward})
 
