@@ -20,7 +20,7 @@ def import_csv(file_path: str) -> list:
     with open(file_path, 'r', encoding='utf-8') as file:
         csv_reader = csv.reader(file)
         for row in csv_reader:
-            data_list.append({'full_address': row[0], 'work': row[0]})
+            data_list.append({'full_address': " ".join(row), 'work': " ".join(row)})
     return data_list
 
 def export_csv(data: list, file_path: str):
@@ -34,18 +34,25 @@ def export_csv(data: list, file_path: str):
     except Exception as e:
         print(f"An error occurred: {e}")
 
+def replace_strings_with_space(addr: dict) -> dict:
+    """Replace specified strings with space in the address."""
+    strings_to_replace = [",", "ポストコード"]  # Add any other strings you want to replace with space
+    for string in strings_to_replace:
+        addr['work'] = addr['work'].replace(string, " ")
+    return addr
+
 def extract_country(addr: dict) -> dict:
     """Extract country information from address."""
     exceptions = ['日本橋', '日本生命', '日本電機', '日本技術', '日本製鋼', '日本郵便', '日本株式会社']
-    if '日本' in addr['work'] and not any(ex in addr['work'] for ex in exceptions):
+    if '日本国' in addr['work']:
+        addr['work'] = addr['work'].replace('日本国', '')
+        addr['country'] = '日本国'
+    elif '日本' in addr['work'] and not any(ex in addr['work'] for ex in exceptions):
         addr['work'] = addr['work'].replace('日本', '')
         addr['country'] = '日本'
     elif 'JP' in addr['work']:
         addr['work'] = addr['work'].replace('JP', '')
         addr['country'] = 'JP'
-    elif '日本国' in addr['work']:
-        addr['work'] = addr['work'].replace('日本国', '')
-        addr['country'] = '日本国'
     else:
         addr['country'] = None
     return addr
@@ -133,6 +140,7 @@ if __name__ == "__main__":
     print(f"Records Processed: {len(rec)}")
 
     with ProcessPoolExecutor() as executor:
+        rec = list(executor.map(replace_strings_with_space, rec))
         # Extract country
         rec = list(executor.map(extract_country, rec))
         # Extract postalcode
