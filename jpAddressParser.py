@@ -4,6 +4,7 @@ import sys
 from datetime import datetime
 
 from normalize_japanese_addresses import normalize
+from concurrent.futures import ProcessPoolExecutor
 
 
 def check_arguments():
@@ -130,12 +131,15 @@ if __name__ == "__main__":
     # CSV data import
     rec = import_csv(file_path)
     print(f"Records Processed: {len(rec)}")
-    # Extract country
-    rec = [extract_country(r) for r in rec]
-    # Extract postalcode
-    rec = [extract_postalcode(r) for r in rec]
-    # parse address
-    rec = [parse_address(r) for r in rec]
+
+    with ProcessPoolExecutor() as executor:
+        # Extract country
+        rec = list(executor.map(extract_country, rec))
+        # Extract postalcode
+        rec = list(executor.map(extract_postalcode, rec))
+        # process address
+        rec = list(executor.map(parse_address, rec))
+
     # Export CSV
     export_csv(rec, file_path.rsplit(".", 1)[0] + "_parsed.csv")
 
