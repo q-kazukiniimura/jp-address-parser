@@ -61,7 +61,26 @@ def parse_address(addr: dict) -> dict:
 
     addr.update({'county': county, 'city': city, 'ward': ward})
 
-    addr['neighborhood'] = parsed['town']
+    # Neighborhood
+    chome = { 
+            '一丁目': '1丁目',
+            '二丁目': '2丁目',
+            '三丁目': '3丁目',
+            '四丁目': '4丁目',
+            '五丁目': '5丁目',
+            '六丁目': '6丁目',
+            '七丁目': '7丁目',
+            '八丁目': '8丁目',
+            '九丁目': '9丁目',
+            '十丁目': '10丁目'
+    }
+    kanji_chome_in_town = re.search('|'.join(list(chome.keys())), parsed['town'])
+    numeric_chome_in_address = re.search('|'.join(list(chome.values())), addr['work'])
+    if kanji_chome_in_town and numeric_chome_in_address:
+        addr['neighborhood'] = parsed['town'].replace(kanji_chome_in_town.group(), numeric_chome_in_address.group())
+    else:
+        addr['neighborhood'] = parsed['town']
+  
     addr['banch'] = parsed['addr']
     addr['go'] = parsed['addr']
     addr['buildingName'] = None
@@ -83,4 +102,3 @@ if __name__ == "__main__":
     rec = [parse_address(r) for r in rec]
     # Export CSV
     export_csv(rec, "data/parsed_address.csv")
-
