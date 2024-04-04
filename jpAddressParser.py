@@ -35,9 +35,16 @@ def export_csv(data: list, file_path: str):
 
 def extract_country(addr: dict) -> dict:
     """Extract country information from address."""
-    if '日本' in addr['work']:
+    exceptions = ['日本橋', '日本生命', '日本電機', '日本技術', '日本製鉄', '日本郵便', '日本株式会社']
+    if '日本' in addr['work'] and not any(ex in addr['work'] for ex in exceptions):
         addr['work'] = addr['work'].replace('日本', '')
         addr['country'] = '日本'
+    elif 'JP' in addr['work']:
+        addr['work'] = addr['work'].replace('JP', '')
+        addr['country'] = 'JP'
+    elif '日本国' in addr['work']:
+        addr['work'] = addr['work'].replace('日本国', '')
+        addr['country'] = '日本国'
     else:
         addr['country'] = None
     return addr
@@ -61,7 +68,8 @@ def parse_prefecture(parsed_address: dict) -> str:
 def parse_county_city_ward(parsed_address: dict) -> tuple:
     """Parse and return the county, city, and ward."""
     city = parsed_address['city']
-    if '郡' in city:
+    # Avoiding the parsing of cities with a "郡" at the beginning, such as "郡山市".
+    if '郡' in city and city.index('郡') == 0:
         county = city.split('郡')[0] + '郡'
         city = city.split('郡')[-1]
         return county, city, None
