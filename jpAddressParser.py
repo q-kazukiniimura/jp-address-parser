@@ -36,7 +36,7 @@ def export_csv(data: list, file_path: str):
 
 def extract_country(addr: dict) -> dict:
     """Extract country information from address."""
-    exceptions = ['日本橋', '日本生命', '日本電機', '日本技術', '日本製鉄', '日本郵便', '日本株式会社']
+    exceptions = ['日本橋', '日本生命', '日本電機', '日本技術', '日本製鋼', '日本郵便', '日本株式会社']
     if '日本' in addr['work'] and not any(ex in addr['work'] for ex in exceptions):
         addr['work'] = addr['work'].replace('日本', '')
         addr['country'] = '日本'
