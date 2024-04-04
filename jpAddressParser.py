@@ -45,22 +45,21 @@ def extract_postalcode(addr: dict) -> dict:
     return addr
 
 def parse_address(addr: dict) -> dict:
-    parsed = normalize(addr['work'])
+    work = addr['work'].split()
+    parsed = normalize(work[0])
+    # Prefecture
     addr['prefecture'] = parsed['pref']
-
+    # County, city and ward
     county = None
     ward = None
     city = parsed['city']
-
     if '郡' in city:
         county = city.split('郡')[0] + '郡'
         city = city.split('郡')[-1]
     elif parsed['pref'] != '東京都' and '区' in city:
         ward = city.split('市')[1]
         city = city.split('市')[0] + '市'
-
     addr.update({'county': county, 'city': city, 'ward': ward})
-
     # Neighborhood
     chome = { 
             '一丁目': '1丁目',
@@ -80,10 +79,12 @@ def parse_address(addr: dict) -> dict:
         addr['neighborhood'] = parsed['town'].replace(kanji_chome_in_town.group(), numeric_chome_in_address.group())
     else:
         addr['neighborhood'] = parsed['town']
-  
-    addr['banch'] = parsed['addr']
-    addr['go'] = parsed['addr']
-    addr['buildingName'] = None
+    # banch/go
+    addr = parsed['addr'].split("-")
+    addr['banch'] = addr[0]
+    addr['go'] = " ".join(work[1:]) if len(addr) > 0 else None
+    # buildingName and others
+    addr['buildingName'] = " ".join(work[1:]) if len(work) > 0 else None
     addr['roomNumber'] = None
     addr['floorNumber'] = None
     del addr['work']
